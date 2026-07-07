@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Minecraft Client",
+            "type": "shell",
+            "command": ".\\gradlew.bat",
+            "args": [
+                "runClient"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "JAVA_HOME": "D:\\Program Files\\Java\\Jdk8",
+                    "PATH": "D:\\Program Files\\Java\\Jdk8\\bin;${env:PATH}"
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

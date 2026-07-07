@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CommandDataCap extends CommandBase {
-    private static final String ID_PATTERN = "[A-Za-z0-9_\\-:.]+";
+    private static final String ID_PATTERN = "[\\p{L}\\p{N}_\\-:.]+";
 
     private final CaptureRecorder recorder;
 
@@ -69,7 +69,7 @@ public class CommandDataCap extends CommandBase {
             requireArgumentCount(sender, args, 1);
             executeReset(sender);
         } else if ("exit".equalsIgnoreCase(args[0])) {
-            executeExit(sender, args);
+            executeExit(server, sender, args);
         } else {
             send(sender, getUsage(sender));
         }
@@ -179,16 +179,16 @@ public class CommandDataCap extends CommandBase {
         send(sender, "Data capture reset. Removed " + result.getRemovedSampleCount() + " buffered samples.");
     }
 
-    private void executeExit(ICommandSender sender, String[] args) throws CommandException {
+    private void executeExit(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) {
             send(sender, "/datacap exit <create|remove|list|info>");
             return;
         }
 
         if ("create".equalsIgnoreCase(args[1])) {
-            executeExitCreate(sender, args);
+            executeExitCreate(server, sender, args);
         } else if ("remove".equalsIgnoreCase(args[1])) {
-            executeExitRemove(sender, args);
+            executeExitRemove(server, sender, args);
         } else if ("list".equalsIgnoreCase(args[1])) {
             requireArgumentCount(sender, args, 2);
             executeExitList(sender);
@@ -199,7 +199,7 @@ public class CommandDataCap extends CommandBase {
         }
     }
 
-    private void executeExitCreate(ICommandSender sender, String[] args) throws CommandException {
+    private void executeExitCreate(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         requireArgumentCount(sender, args, 3);
         EntityPlayerMP player = getCommandSenderAsPlayer(sender);
         String id = args[2];
@@ -215,14 +215,17 @@ public class CommandDataCap extends CommandBase {
             throw new CommandException("Exit region already exists: " + id);
         }
 
+        saveExitRegions(server);
+
         send(sender, "Created exit region " + id + " from "
                 + format(region.getMin()) + " to " + format(region.getMax()) + ".");
     }
 
-    private void executeExitRemove(ICommandSender sender, String[] args) throws CommandException {
+    private void executeExitRemove(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         requireArgumentCount(sender, args, 3);
         String id = args[2];
         if (DataCollectionMod.EXIT_REGIONS.remove(id)) {
+            saveExitRegions(server);
             send(sender, "Removed exit region " + id + ".");
         } else {
             throw new CommandException("Unknown exit region: " + id);
@@ -263,12 +266,20 @@ public class CommandDataCap extends CommandBase {
 
     private void validateRegionId(String id) throws CommandException {
         if (!id.matches(ID_PATTERN)) {
-            throw new CommandException("Exit region id may only contain letters, numbers, _, -, :, and .");
+            throw new CommandException("Exit region id may only contain Unicode letters, numbers, _, -, :, and .");
         }
     }
 
     private String format(BlockPos pos) {
         return pos.getX() + " " + pos.getY() + " " + pos.getZ();
+    }
+
+    private void saveExitRegions(MinecraftServer server) throws CommandException {
+        try {
+            DataCollectionMod.EXIT_REGION_STORAGE.save(server);
+        } catch (IOException exception) {
+            throw new CommandException("Failed to save exit regions: " + exception.getMessage());
+        }
     }
 
     private void send(ICommandSender sender, String message) {

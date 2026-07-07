@@ -48,11 +48,26 @@ public class ExitRegion {
         return region;
     }
 
+    public static ExitRegion fromJson(JsonObject region) {
+        String id = region.get("id").getAsString();
+        BlockPos min = readPosition(region.getAsJsonObject("min"));
+        BlockPos max = readPosition(region.getAsJsonObject("max"));
+        return new ExitRegion(id, min, max);
+    }
+
     private JsonObject createPosition(BlockPos pos) {
         JsonObject position = new JsonObject();
         position.addProperty("x", pos.getX());
         position.addProperty("y", pos.getY());
         position.addProperty("z", pos.getZ());
         return position;
+    }
+
+    private static BlockPos readPosition(JsonObject position) {
+        return new BlockPos(
+                position.get("x").getAsInt(),
+                position.get("y").getAsInt(),
+                position.get("z").getAsInt()
+        );
     }
 }

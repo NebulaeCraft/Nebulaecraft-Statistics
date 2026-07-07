@@ -23,6 +23,10 @@ public class ExitRegionManager {
         return regions.remove(id) != null;
     }
 
+    public synchronized void clear() {
+        regions.clear();
+    }
+
     public synchronized ExitRegion get(String id) {
         return regions.get(id);
     }

@@ -6,6 +6,8 @@ import com.sakana.datacap.capture.ResetResult;
 import com.sakana.datacap.capture.StopResult;
 import com.sakana.datacap.DataCollectionMod;
 import com.sakana.datacap.exit.ExitRegion;
+import com.sakana.datacap.exit.ExitRegionIds;
+import com.sakana.datacap.network.NetworkHandler;
 import com.sakana.datacap.selection.Selection;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -23,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class CommandDataCap extends CommandBase {
-    private static final String ID_PATTERN = "[\\p{L}\\p{N}_\\-:.]+";
-
     private final CaptureRecorder recorder;
 
     public CommandDataCap(CaptureRecorder recorder) {
@@ -99,6 +99,7 @@ public class CommandDataCap extends CommandBase {
             options.add("remove");
             options.add("list");
             options.add("info");
+            options.add("gui");
             return getListOfStringsMatchingLastWord(args, options);
         }
 
@@ -181,7 +182,7 @@ public class CommandDataCap extends CommandBase {
 
     private void executeExit(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) {
-            send(sender, "/datacap exit <create|remove|list|info>");
+            send(sender, "/datacap exit <create|remove|list|info|gui>");
             return;
         }
 
@@ -194,8 +195,11 @@ public class CommandDataCap extends CommandBase {
             executeExitList(sender);
         } else if ("info".equalsIgnoreCase(args[1])) {
             executeExitInfo(sender, args);
+        } else if ("gui".equalsIgnoreCase(args[1])) {
+            requireArgumentCount(sender, args, 2);
+            NetworkHandler.openExitRegionGui(getCommandSenderAsPlayer(sender));
         } else {
-            send(sender, "/datacap exit <create|remove|list|info>");
+            send(sender, "/datacap exit <create|remove|list|info|gui>");
         }
     }
 
@@ -265,8 +269,8 @@ public class CommandDataCap extends CommandBase {
     }
 
     private void validateRegionId(String id) throws CommandException {
-        if (!id.matches(ID_PATTERN)) {
-            throw new CommandException("Exit region id may only contain Unicode letters, numbers, _, -, :, and .");
+        if (!ExitRegionIds.isValid(id)) {
+            throw new CommandException(ExitRegionIds.ID_RULE_MESSAGE);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.sakana.datacap.item;
 
 import com.sakana.datacap.DataCollectionMod;
+import com.sakana.datacap.network.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -27,6 +28,7 @@ public class ItemExitTriggerTool extends Item {
             EntityPlayerMP playerMp = (EntityPlayerMP) player;
             DataCollectionMod.SELECTIONS.setPos2(playerMp.getUniqueID(), pos);
             DataCollectionMod.sendMessage(playerMp, "Exit selection pos2 set to " + format(pos) + ".");
+            NetworkHandler.openExitRegionGui(playerMp);
         }
 
         return EnumActionResult.SUCCESS;

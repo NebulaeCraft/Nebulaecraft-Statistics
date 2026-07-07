@@ -6,6 +6,7 @@ import com.sakana.datacap.exit.ExitRegionManager;
 import com.sakana.datacap.exit.ExitRegionStorage;
 import com.sakana.datacap.item.ItemExitTriggerTool;
 import com.sakana.datacap.item.ModItems;
+import com.sakana.datacap.network.NetworkHandler;
 import com.sakana.datacap.selection.SelectionManager;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -39,6 +40,7 @@ public class DataCollectionMod {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
+        NetworkHandler.init(event.getSide());
     }
 
     @Mod.EventHandler

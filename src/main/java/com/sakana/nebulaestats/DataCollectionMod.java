@@ -27,8 +27,8 @@ import org.apache.logging.log4j.Logger;
 @Mod.EventBusSubscriber(modid = DataCollectionMod.MODID)
 public class DataCollectionMod {
     public static final String MODID = "nebulaestats";
-    public static final String NAME = "Nebulaecraft Statistics";
-    public static final String VERSION = "1.0.0";
+    public static final String NAME = "NebulaeCraft Statistics";
+    public static final String VERSION = "1.1";
 
     public static final ExitRegionManager EXIT_REGIONS = new ExitRegionManager();
     public static final ExitRegionStorage EXIT_REGION_STORAGE = new ExitRegionStorage(EXIT_REGIONS);
